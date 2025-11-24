@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://example.ng/wp-content/uploads/2021/04/What-Are-Gadgets.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(11, 138, 197, 0.8);
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            background: #337ac0;
+            padding: 10px;
+            text-decoration: none;
+        }
+        nav ul li {
+            margin: 0 15px;
+            color: white;
+            cursor: pointer;
+        }
+        .products {
+            display: flex;
+            padding: 20px;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 5px;
+        }
+        .product img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        .cart-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 300px;
+            background: rgba(255, 255, 255, 0.9);
+            border-left: 1px solid #ddd;
+            padding: 20px;
+            display: none;
+        }
+    </style>
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function addToCart(id, name, price) {
+            let item = cart.find(product => product.id === id);
+            if (item) {
+                item.quantity++;
+            } else {
+                cart.push({ id, name, price, quantity: 1 });
+            }
+            updateCart();
+        }
+        
+        function updateCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            let cartItems = document.getElementById('cart-items');
+            let totalPrice = 0;
+            cartItems.innerHTML = '';
+            cart.forEach(item => {
+                let li = document.createElement('li');
+                li.textContent = `₹{item.name} x₹{item.quantity} - $₹{item.price * item.quantity}`;
+                cartItems.appendChild(li);
+                totalPrice += item.price * item.quantity;
+            });
+            document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+            document.getElementById('cart-count').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+        
+        function clearCart() {
+            cart = [];
+            updateCart();
+        }
+        
+        function toggleCart() {
+            let cartPanel = document.getElementById('cart-panel');
+            cartPanel.style.display = cartPanel.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateCart);
+    </script>
+</head>
+<body>
+    <header> <h1>Welcome to Our Online ElectronicStore</h1>
+        <p>Find the best deals on Smartphones, Laptops, Watches, and Earphones.</p>
+    </header>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Mobiles</a></li>
+                <li><a href="#">Laptops</a></li>
+                <li><a href="#">Watches</a></li>
+                <li><a href="#">Earphones</a></li>
+                <li class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section class="products">
+        <div class="product" data-id="1" data-name="Smartphone" data-price="499">
+            <img src="https://tse4.mm.bing.net/th?id=OIP.bSfdt5vLVpSDs-_PL0lKKAHaHa&pid=Api&P=0&h=180" alt="Smartphone">
+            <h3>Smartphone</h3>
+            <p>₹1499</p>
+            <button onclick="addToCart(1, 'Smartphone', 499)">Add to Cart</button>
+        </div>
+        <div class="product" data-id="2" data-name="Laptop" data-price="999">
+            <img src="https://tse3.mm.bing.net/th?id=OIP.eL1PU8svzixbOaDaon4V8QHaE8&pid=Api&P=0&h=180" alt="Laptop">
+            <h3>Laptop</h3>
+            <p>₹9999</p>
+            <button onclick="addToCart(2, 'Laptop', 999)">Add to Cart</button>
+        </div>
+        <div class="product" data-id="3" data-name="Watch" data-price="199">
+            <img src="https://cdn.luxe.digital/media/2020/05/21140712/best-luxury-watch-brands-girard-perregaux-luxe-digital.jpg" alt="Watch">
+            <h3>Watch</h3>
+            <p>₹1199</p>
+            <button onclick="addToCart(3, 'Watch', 199)">Add to Cart</button>
+        </div>
+        <div class="product" data-id="4" data-name="Earphones" data-price="79">
+            <img src="https://microless.com/cdn/products/6550f67768d46e34679320911558fcb6-hi.jpg" alt="Earphones">
+            <h3>Earphones</h3>
+            <p>₹279</p>
+            <button onclick="addToCart(4, 'Earphones', 79)">Add to Cart</button>
+        </div>
+    </section>
+    
+    <aside id="cart-panel" class="cart-panel">
+        <h2>Shopping Cart</h2>
+        <ul id="cart-items"></ul>
+        <p>Total: ₹<span id="total-price">0.00</span></p>
+        <button onclick="clearCart()">Empty Cart</button>
+    </aside>
+</body>
+</html>

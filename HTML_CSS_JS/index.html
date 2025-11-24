@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match Game</title>
+    <style>
+        body {
+            background-image: url("https://wallpapercave.com/wp/wp11049942.jpg");
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 50px auto;
+        }
+        h1 {
+            font-size: 24px;
+           color: rgba(8, 0, 0, 0.968);
+            margin-bottom: 10px;
+        }
+        .category-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .category-buttons button {
+            background: #96d3ffdf;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 60px;
+            height: 60px;
+            background: rgb(158, 232, 252);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .info {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Memory Match Game🧠</h1>
+        <div class="category-buttons">
+            <button onclick="startGame('fruits')">🍎 Fruits</button>
+            <button onclick="startGame('emojis')">😀 Emojis</button>
+            <button onclick="startGame('animals')">🐶 Animals</button>
+            <button onclick="startGame('planets')">🪐 Planets</button>
+            <button onclick="startGame('places')">⛪ Places</button>
+        </div>
+        <div class="grid" id="game-board"></div>
+        <div class="info" id="timer">Time Left: 24s</div>
+        <div class="info" id="score">Score: 0</div>
+    </div>
+    
+    <script>
+        const categories = {
+            fruits: ["🍎", "🍎", "🍌", "🍌", "🍉", "🍉", "🍇", "🍇", "🍓", "🍓", "🥭", "🥭"],
+            emojis: ["😀", "😀", "😂", "😂", "😎", "😎", "😍", "😍", "🤩", "🤩", "🥳", "🥳"],
+            animals: ["🐶", "🐶", "🐱", "🐱", "🐰", "🐰", "🦊", "🦊", "🐻", "🐻", "🐼", "🐼"],
+            planets: ["🪐", "🪐", "🌍", "🌍", "🌕", "🌕", "☀️", "☀️", "🌟", "🌟", "🌑", "🌑"],
+            places: ["🏠",  "🏫", "🏢", "🏣", "🏥", "🏦", "🏪","🏩", "💒", "⛪",  "🏬", "🏤"],
+        };
+        let selectedCards = [];
+        let matchedPairs = 0;
+        let score = 0;
+        let timeLeft = 24;
+
+        function startGame(category) {
+            let shuffledEmojis = categories[category].sort(() => 0.5 - Math.random());
+            const gameBoard = document.getElementById("game-board");
+            gameBoard.innerHTML = "";
+            selectedCards = [];
+            matchedPairs = 0;
+            score = 0;
+            document.getElementById("score").textContent = `Score: ${score}`;
+            
+            shuffledEmojis.forEach((emoji, index) => {
+                let card = document.createElement("div");
+                card.classList.add("card");
+                card.dataset.emoji = emoji;
+                card.dataset.index = index;
+                card.addEventListener("click", flipCard);
+                gameBoard.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (selectedCards.length < 2 && !this.classList.contains("matched")) {
+                this.textContent = this.dataset.emoji;
+                selectedCards.push(this);
+                if (selectedCards.length === 2) {
+                    setTimeout(checkMatch, 500);
+                }
+            }
+        }
+        
+        function checkMatch() {
+            if (selectedCards[0].dataset.emoji === selectedCards[1].dataset.emoji) {
+                selectedCards.forEach(card => card.classList.add("matched"));
+                matchedPairs++;
+                score += 10;
+            } else {
+                selectedCards.forEach(card => card.textContent = "");
+            }
+            selectedCards = [];
+            document.getElementById("score").textContent = `Score: ${score}`;
+        }
+
+        function countdown() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                document.getElementById("timer").textContent = `Time Left: ${timeLeft}s`;
+                setTimeout(countdown, 1000);
+            }
+        }
+        countdown();
+    </script>
+</body>
+</html>
